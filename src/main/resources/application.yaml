@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: b60-account-api
+  profiles:
+    active: local
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      authentication-database: admin
+      username: b60-erick
+      password: eE7hTJ1M6b8wPZFi@qGKo44Z83nZ
+      database: b60_account_db
+
+transaction-api:
+  url: http://localhost:8081
+  resource:
+    register-deposit: /transaction/deposit/{deposit-id}
+
+
+exceptions:
+  errors:
+    CurrentAccountNotFoundException:
+      code: B60AA-001
+      message: Current account not found.
+    SavingAccountNotFoundException:
+      code: B60AA-002
+      message: Saving account not found.
+    FixedTermAccountNotFoundException:
+      code: B60AA-003
+      message: Fixed term account not found.

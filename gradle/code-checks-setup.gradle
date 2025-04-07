@@ -1,0 +1,73 @@
+apply plugin: 'checkstyle'
+apply plugin: 'pmd'
+
+checkstyle {
+    toolVersion = '10.12.2'
+    configFile = file("${rootDir}/config/checkstyle/google_checks.xml")
+}
+
+pmd {
+    toolVersion '7.0.0'
+    ruleSetFiles = files('config/pmd/rules.xml')
+    ruleSets = []
+    ignoreFailures = false
+    pmdTest.enabled = false
+}
+
+tasks.register('checkstyle') {
+    dependsOn project.tasks.findAll { task -> task.name.matches('checkstyle\\w+') }
+}
+
+tasks.register('pmd') {
+    dependsOn project.tasks.findAll { task -> task.name.matches('pmd\\w+') }
+}
+
+tasks.withType(Checkstyle).configureEach {
+    reports {
+        xml.required = false
+        html.required = true
+    }
+}
+
+tasks.withType(Pmd).configureEach {
+    reports {
+        xml.required = false
+        html.required = true
+    }
+}
+
+spotbugs {
+    ignoreFailures = false
+    showProgress = true
+}
+
+spotbugsMain {
+    reports {
+        html {
+            required = true
+        }
+    }
+}
+
+spotbugsTest {
+    reports {
+        html {
+            required = true
+        }
+    }
+}
+
+spotless {
+    encoding 'UTF-8'
+
+    java {
+        removeUnusedImports()
+        toggleOffOn('formatter:off', 'formatter:on')
+        googleJavaFormat()
+    }
+}
+
+tasks.named('check').configure {
+    dependsOn tasks.named('checkstyle')
+    dependsOn tasks.named('jacocoTestCoverageVerification')
+}
